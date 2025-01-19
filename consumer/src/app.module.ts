@@ -3,12 +3,17 @@ import { Module } from '@nestjs/common';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { RabbitMqModule } from './brokers/rmq/rabbit-mq.module';
 import { RedisEmitterModule } from './emitters/redis/redis-emitter.module';
+import { ConfigModule } from '@nestjs/config';
 
 const selectedTransportModule = RabbitMqModule;
 const selectedEmitterModule = RedisEmitterModule;
 
 @Module({
-  imports: [selectedTransportModule, selectedEmitterModule],
+  imports: [
+    selectedTransportModule,
+    selectedEmitterModule,
+    ConfigModule.forRoot(),
+  ],
 })
 export class AppModule {
   static getTransportOptions(): MicroserviceOptions {

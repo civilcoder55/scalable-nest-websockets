@@ -6,7 +6,7 @@ import { createClient } from 'redis';
 export class RedisEmitterService implements OnModuleInit {
   private readonly logger = new Logger(RedisEmitterService.name);
   private readonly redisClient = createClient({
-    url: 'redis://localhost:6379',
+    url: process.env.REDIS_URL,
   });
   public readonly emitter: Emitter = new Emitter(this.redisClient);
 

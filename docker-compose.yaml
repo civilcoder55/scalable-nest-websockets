@@ -4,14 +4,57 @@ services:
   rmq:
     image: rabbitmq:4.0.3-management
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
     volumes:
       - ./data/rmq:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
   redis:
     image: redis:alpine
-    ports:
-      - 6379:6379
+    # ports:
+    #   - "127.0.0.1:6379:6379"
     volumes:
       - ./data/redis:/data/redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+
+  consumer:
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+    image: consumer
+    depends_on:
+      rmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./consumer/.env.production
+    command: ["pnpm", "run", "start:prod"]
+    restart: unless-stopped
+
+  socket-io-server:
+    build:
+      context: ./socket-io-server
+      dockerfile: Dockerfile
+    image: socket-io-server
+    ports:
+      - "3000-3002:3000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./socket-io-server/.env.production
+    command: ["pnpm", "run", "start:prod"]
+    restart: unless-stopped

@@ -12,7 +12,7 @@ export class RabbitMqModule {
     return {
       transport: Transport.RMQ,
       options: {
-        urls: ['amqp://localhost:5672'],
+        urls: [process.env.RABBIT_MQ_URL],
         queue: 'notifications_queue',
         queueOptions: {
           durable: false,
