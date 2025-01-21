@@ -5,6 +5,7 @@ This project implements a horizontally scalable WebSocket server architecture th
 
 
 ![screenshot](/screenshots/HLD.png)
+![screenshot](/screenshots/RHLD.png)
 
 ## Architecture
 
@@ -21,6 +22,7 @@ The project consists of the following components:
 - Message queuing for reliable event processing
 - Microservice architecture using NestJS
 - Docker containerization for easy deployment
+- Receives events from client and emit to message broker
 
 ## Prerequisites
 
